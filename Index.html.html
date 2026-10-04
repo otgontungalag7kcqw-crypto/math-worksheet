@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="mn" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>II Бүлэг: Тоон ба үсэгт илэрхийлэл - 80 минутын интерактив ажлын хуудас</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            },
+            accent: {
+              50: '#eff6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- KaTeX for math formatting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .katex-display {
+      margin: 0.5em 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 4px 0;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      .print-show {
+        display: block !important;
+      }
+      body {
+        background-color: white !important;
+        color: black !important;
+      }
+      .card-box {
+        border: 1px solid #e5e7eb !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+      }
+      .solution-panel {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+  <!-- Notification Banner for Auto-Unlock -->
+  <div id="auto-unlock-banner" class="hidden bg-emerald-600 text-white text-xs sm:text-sm font-semibold py-2 px-4 text-center shadow-md animate-bounce no-print">
+    <i class="fa-solid fa-bell mr-1.5"></i> Сүүлийн 10 минут эхэллээ! Бүх хариу болон бодолтууд автоматаар нээгдлээ.
+  </div>
+
+  <!-- Top Navigation & Timer Bar -->
+  <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur border-b border-slate-200 dark:border-slate-700 shadow-sm no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo / Title -->
+        <div class="flex items-center space-x-3">
+          <div class="p-2 bg-brand-600 text-white rounded-xl shadow">
+            <i class="fa-solid fa-calculator text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold leading-tight">II БҮЛЭГ: Тоон ба үсэгт илэрхийлэл</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">80 минутын нэгтгэн бататгах интерактив ажлын хуудас</p>
+          </div>
+        </div>
+
+        <!-- Interactive 80-min Timer Widget -->
+        <div class="flex items-center space-x-2 bg-slate-100 dark:bg-slate-700/60 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-600">
+          <div class="flex items-center px-3 py-1 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+            <i class="fa-regular fa-clock text-brand-600 dark:text-brand-400 mr-2 animate-pulse"></i>
+            <span id="timer-display" class="font-mono text-lg font-bold text-slate-800 dark:text-slate-100">80:00</span>
+          </div>
+          <button id="timer-start-btn" onclick="toggleTimer()" title="Эхлүүлэх / Түр зогсоох" class="p-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-medium transition flex items-center justify-center w-9 h-9">
+            <i id="timer-icon" class="fa-solid fa-play"></i>
+          </button>
+          <button onclick="resetTimer()" title="Дахин эхлүүлэх" class="p-2 rounded-xl text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 transition w-9 h-9">
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+        </div>
+
+        <!-- Right Controls (Direct Unlock Toggle, Formula Modal, Theme, Print) -->
+        <div class="flex items-center space-x-2">
+          
+          <!-- Direct Toggle Answer Lock Button (No Code Required) -->
+          <button id="answer-lock-btn" onclick="toggleAnswersDirectly()" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 transition flex items-center space-x-1.5 shadow-sm border border-amber-300 dark:border-amber-700">
+            <i id="lock-icon" class="fa-solid fa-lock text-amber-600 dark:text-amber-400"></i>
+            <span id="lock-label" class="hidden sm:inline">Хариу: Нуугдсан</span>
+          </button>
+
+          <button onclick="openFormulaModal()" class="px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-xl transition flex items-center space-x-1.5">
+            <i class="fa-solid fa-book-open text-brand-600"></i>
+            <span class="hidden md:inline">Томьёо харах</span>
+          </button>
+
+          <button onclick="window.print()" class="p-2 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-xl transition" title="Хэвлэх / PDF болгох">
+            <i class="fa-solid fa-print"></i>
+          </button>
+
+          <button onclick="toggleDarkMode()" class="p-2 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-xl transition" title="Theme сэдэв өөрчлөх">
+            <i class="fa-solid fa-moon dark:hidden"></i>
+            <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Section Navigation Tabs -->
+    <div class="no-print flex overflow-x-auto space-x-2 pb-2 border-b border-slate-200 dark:border-slate-700">
+      <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active px-4 py-2 text-sm font-semibold rounded-xl bg-brand-600 text-white shadow flex-shrink-0">
+        <i class="fa-solid fa-chart-pie mr-1.5"></i> Нийт тойм & Цаг
+      </button>
+      <button onclick="switchTab('formulas')" id="tab-formulas" class="tab-btn px-4 py-2 text-sm font-medium rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition flex-shrink-0">
+        <i class="fa-solid fa-book mr-1.5"></i> I. Томьёо ба санамж (10 м)
+      </button>
+      <button onclick="switchTab('practice')" id="tab-practice" class="tab-btn px-4 py-2 text-sm font-medium rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition flex-shrink-0">
+        <i class="fa-solid fa-pen-ruler mr-1.5"></i> II. Бататгах даалгавар (40 м)
+      </button>
+      <button onclick="switchTab('test')" id="tab-test" class="tab-btn px-4 py-2 text-sm font-medium rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition flex-shrink-0">
+        <i class="fa-solid fa-list-check mr-1.5"></i> III. Нэгтгэн сорих (20 м)
+      </button>
+      <button onclick="switchTab('solutions')" id="tab-solutions" class="tab-btn px-4 py-2 text-sm font-medium rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition flex items-center flex-shrink-0">
+        <i class="fa-solid fa-key mr-1.5"></i> IV. Бүх бодолт & Хариу (10 м)
+        <i id="tab-solutions-lock-icon" class="fa-solid fa-lock text-amber-500 ml-1.5 text-xs"></i>
+      </button>
+    </div>
+
+    <!-- TAB 0: OVERVIEW & TIME ALLOCATION -->
+    <section id="section-overview" class="tab-content block space-y-6">
+      <!-- Welcome Banner -->
+      <div class="bg-gradient-to-r from-brand-700 via-brand-600 to-emerald-800 text-white p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden">
+        <div class="absolute right-0 top-0 opacity-10 translate-x-8 -translate-y-8 pointer-events-none">
+          <i class="fa-solid fa-square-root-variable text-[240px]"></i>
+        </div>
+        <div class="relative z-10 max-w-3xl">
+          <span class="px-3 py-1 rounded-full bg-white/20 text-xs font-semibold tracking-wider uppercase backdrop-blur">Математик • 9-11-р анги</span>
+          <h2 class="text-2xl sm:text-4xl font-extrabold mt-3 mb-2">II БҮЛЭГ: Тоон ба үсэгт илэрхийлэл</h2>
+          <p class="text-brand-100 text-sm sm:text-base leading-relaxed">
+            Зэрэг, язгуур, стандарт хэлбэр болон бодит тооны үйлдлийн чанаруудыг нэгтгэн бататгах 80 минутын цогц дасгал ажил. Сүүлийн 10 минутад эсвэл багш шууд товчлуур дээр даран хариуг нээж шалгах боломжтой.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <button onclick="startFullLesson()" class="px-5 py-2.5 rounded-xl bg-white text-brand-900 font-bold hover:bg-brand-50 transition shadow-lg flex items-center space-x-2">
+              <i class="fa-solid fa-circle-play text-brand-600"></i>
+              <span>80 минутын хичээл эхлүүлэх</span>
+            </button>
+            <button onclick="toggleAnswersDirectly()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium transition backdrop-blur flex items-center space-x-2 shadow">
+              <i class="fa-solid fa-lock-open"></i>
+              <span>Хариу шууд нээх / Нуух</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Syllabus Topics Card -->
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <h3 class="text-lg font-bold mb-4 flex items-center text-slate-800 dark:text-slate-100">
+          <i class="fa-solid fa-list-ol text-brand-600 mr-2.5"></i> Бүлгийн хамрах сэдвүүд (2.1 - 2.5)
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
+            <div class="text-xs font-bold text-brand-600 dark:text-brand-400">Сэдэв 2.1</div>
+            <div class="font-semibold mt-1">Бүхэл тоон илтгэгчтэй зэрэг, түүний чанар</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
+            <div class="text-xs font-bold text-brand-600 dark:text-brand-400">Сэдэв 2.2</div>
+            <div class="font-semibold mt-1">$n$ зэргийн язгуур ба арифметик язгуур</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
+            <div class="text-xs font-bold text-brand-600 dark:text-brand-400">Сэдэв 2.3</div>
+            <div class="font-semibold mt-1">Рационал тоон илтгэгчтэй зэрэг</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
+            <div class="text-xs font-bold text-brand-600 dark:text-brand-400">Сэдэв 2.4</div>
+            <div class="font-semibold mt-1">Стандарт хэлбэрээр бичсэн тооны үйлдэл</div>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 md:col-span-2 lg:col-span-2">
+            <div class="text-xs font-bold text-brand-600 dark:text-brand-400">Сэдэв 2.5</div>
+            <div class="font-semibold mt-1">Бодит тооны үйлдлийн чанар ба ижилсүүлэлт</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Schedule Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div onclick="switchTab('formulas')" class="cursor-pointer p-5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-transparent hover:border-brand-500 transition shadow-sm group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">10 минута</span>
+            <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-brand-600 transition"></i>
+          </div>
+          <h4 class="font-bold text-base group-hover:text-brand-600">I. Томьёо ба санамж</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Зэрэг, язгуур, стандарт хэлбэрийн үндсэн томьёонуудыг сэргээн санана.</p>
+        </div>
+
+        <div onclick="switchTab('practice')" class="cursor-pointer p-5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-transparent hover:border-brand-500 transition shadow-sm group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300">40 минута</span>
+            <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-brand-600 transition"></i>
+          </div>
+          <h4 class="font-bold text-base group-hover:text-brand-600">II. Бататгах даалгавар</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Зэрэг, язгуур, стандарт хэлбэрийн 6 цогц даалгавар бодно.</p>
+        </div>
+
+        <div onclick="switchTab('test')" class="cursor-pointer p-5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-transparent hover:border-brand-500 transition shadow-sm group">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">20 минута</span>
+            <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-brand-600 transition"></i>
+          </div>
+          <h4 class="font-bold text-base group-hover:text-brand-600">III. Нэгтгэн сорих</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Сонгох тэст ба задлан бодох бодит хэрэглээний 2 бодлого.</p>
+        </div>
+
+        <div onclick="switchTab('solutions')" class="cursor-pointer p-5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-transparent hover:border-brand-500 transition shadow-sm group relative">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">10 минута</span>
+            <i class="fa-solid fa-arrow-right text-slate-400 group-hover:text-brand-600 transition"></i>
+          </div>
+          <h4 class="font-bold text-base group-hover:text-brand-600">IV. Шалгах & Хариу</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Өөрийгөө болон үе тэнгийнхнээ шалгаж, иж бүрэн бодолтоо тулгана.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1: FORMULAS AND REMINDERS -->
+    <section id="section-formulas" class="tab-content hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl sm:text-2xl font-bold flex items-center">
+          <i class="fa-solid fa-book-open text-brand-600 mr-2.5"></i>
+          I. ТОМЬЁО БА САНАМЖ (10 минут)
+        </h2>
+        <span class="text-xs font-semibold px-3 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 rounded-full">Хичээлийн 1-10 дахь минут</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- 1. Exponents -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box">
+          <div class="flex items-center space-x-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-700">
+            <span class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 flex items-center justify-center font-bold">1</span>
+            <h3 class="font-bold text-slate-800 dark:text-slate-100">Бүхэл ба рационал илтгэгчтэй зэрэг</h3>
+          </div>
+          <ul class="space-y-3 text-sm">
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$a^m \cdot a^n = a^{m+n}$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$\frac{a^m}{a^n} = a^{m-n} \quad (a \neq 0)$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$(a^m)^n = a^{m \cdot n}$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$(a \cdot b)^n = a^n \cdot b^n$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$\left(\frac{a}{b}\right)^n = \frac{a^n}{b^n} \quad (b \neq 0)$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$a^{-n} = \frac{1}{a^n} \quad (a \neq 0)$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$a^0 = 1 \quad (a \neq 0)$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$a^{\frac{m}{n}} = \sqrt[n]{a^m} \quad (a > 0, n \ge 2)$</li>
+          </ul>
+        </div>
+
+        <!-- 2. Nth Root Properties -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box">
+          <div class="flex items-center space-x-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-700">
+            <span class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300 flex items-center justify-center font-bold">2</span>
+            <h3 class="font-bold text-slate-800 dark:text-slate-100">$n$ зэргийн язгуурын чанар</h3>
+          </div>
+          <ul class="space-y-3 text-sm">
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$\sqrt[n]{a \cdot b} = \sqrt[n]{a} \cdot \sqrt[n]{b} \quad (a, b \ge 0)$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$\sqrt[n]{\frac{a}{b}} = \frac{\sqrt[n]{a}}{\sqrt[n]{b}} \quad (a \ge 0, b > 0)$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$\left(\sqrt[n]{a}\right)^m = \sqrt[n]{a^m}$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$\sqrt[m]{\sqrt[n]{a}} = \sqrt[m \cdot n]{a}$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$\sqrt[n]{a^n} = a \quad (n \text{ сондгой})$</li>
+            <li class="p-2 rounded bg-slate-50 dark:bg-slate-700/40">$\sqrt[n]{a^n} = |a| \quad (n \text{ тэгш})$</li>
+          </ul>
+        </div>
+
+        <!-- 3. Standard Form -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box">
+          <div class="flex items-center space-x-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-700">
+            <span class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300 flex items-center justify-center font-bold">3</span>
+            <h3 class="font-bold text-slate-800 dark:text-slate-100">Стандарт хэлбэр & Санамж</h3>
+          </div>
+          <div class="space-y-4 text-sm">
+            <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+              <div class="font-semibold text-amber-800 dark:text-amber-300">Стандарт хэлбэр:</div>
+              <p class="mt-1">$a \cdot 10^n \quad (1 \le a < 10, n \in \mathbb{Z})$</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">энд $a$-г манлайлагч хэсэг, $n$-ийг эрэмбэ гэнэ.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/40">
+              <div class="font-semibold text-slate-700 dark:text-slate-300">Санамж:</div>
+              <ul class="list-disc list-inside space-y-1 text-xs text-slate-600 dark:text-slate-300 mt-1">
+                <li>Сөрөг суурийн тэгш зэрэг эерэг, сондгой зэрэг сөрөг байна.</li>
+                <li>Рационалжуулахдаа хуваарийг $(a-b)(a+b)=a^2-b^2$ томьёогоор ашиглана.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: TOPIC PRACTICE PROBLEMS -->
+    <section id="section-practice" class="tab-content hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl sm:text-2xl font-bold flex items-center">
+          <i class="fa-solid fa-pen-ruler text-brand-600 mr-2.5"></i>
+          II. СЭДЭВЧИЛСЭН БАТАТГАХ ДААЛГАВАР (40 минут)
+        </h2>
+        <span class="text-xs font-semibold px-3 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 rounded-full">10 - 50 дахь минут</span>
+      </div>
+
+      <!-- Subsection 2.1 -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold text-brand-700 dark:text-brand-400 border-b border-brand-200 dark:border-brand-800 pb-2">
+          2.1. Бүхэл тоон ба рационал илтгэгчтэй зэрэг
+        </h3>
+
+        <!-- Task 1 -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box space-y-4">
+          <div class="flex justify-between items-start">
+            <h4 class="font-bold text-slate-800 dark:text-slate-100">
+              <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-brand-600 font-extrabold mr-2">Даалгавар 1</span>
+              Илэрхийллийн утгыг олоорой.
+            </h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">а)</div>
+              <div>$2^{-4} + \left(\frac{1}{3}\right)^{-2} - 8^0$</div>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">б)</div>
+              <div>$\frac{4^{-3} \cdot 16^2}{2^5}$</div>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">в)</div>
+              <div>$27^{\frac{2}{3}} \cdot 16^{-\frac{3}{4}} + 81^{0.25}$</div>
+            </div>
+          </div>
+          <div class="no-print pt-2">
+            <button onclick="toggleSolution('sol-1')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-700 transition flex items-center space-x-1">
+              <i class="fa-regular fa-eye"></i>
+              <span>Бодолт & Хариу харах</span>
+            </button>
+            <div id="sol-1" class="hidden mt-3 p-4 bg-brand-50/60 dark:bg-slate-700/80 rounded-xl text-sm space-y-2 border border-brand-200 dark:border-slate-600">
+              <div><strong>а)</strong> $2^{-4} + 3^2 - 1 = \frac{1}{16} + 9 - 1 = 8\frac{1}{16} = \frac{129}{16}$</div>
+              <div><strong>б)</strong> $\frac{(2^2)^{-3} \cdot (2^4)^2}{2^5} = \frac{2^{-6} \cdot 2^8}{2^5} = 2^{2-5} = 2^{-3} = \frac{1}{8}$</div>
+              <div><strong>в)</strong> $(3^3)^{\frac{2}{3}} \cdot (2^4)^{-\frac{3}{4}} + (3^4)^{\frac{1}{4}} = 3^2 \cdot 2^{-3} + 3 = 9 \cdot \frac{1}{8} + 3 = 4\frac{1}{8} = \frac{33}{8}$</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 2 -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box space-y-4">
+          <div class="flex justify-between items-start">
+            <h4 class="font-bold text-slate-800 dark:text-slate-100">
+              <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-brand-600 font-extrabold mr-2">Даалгавар 2</span>
+              Үсэгт илэрхийллийг хялбарчлаарай ($a \neq 0, b \neq 0$).
+            </h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">а)</div>
+              <div>$\frac{a^{-5} \cdot (a^3)^2}{a^{-4}}$</div>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">б)</div>
+              <div>$(3x^{-2}y^3)^{-2} \cdot (9x^4y^{-2})$</div>
+            </div>
+          </div>
+          <div class="no-print pt-2">
+            <button onclick="toggleSolution('sol-2')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-700 transition flex items-center space-x-1">
+              <i class="fa-regular fa-eye"></i>
+              <span>Бодолт & Хариу харах</span>
+            </button>
+            <div id="sol-2" class="hidden mt-3 p-4 bg-brand-50/60 dark:bg-slate-700/80 rounded-xl text-sm space-y-2 border border-brand-200 dark:border-slate-600">
+              <div><strong>а)</strong> $\frac{a^{-5} \cdot a^6}{a^{-4}} = \frac{a^1}{a^{-4}} = a^{1 - (-4)} = a^5$</div>
+              <div><strong>б)</strong> $3^{-2} x^4 y^{-6} \cdot 9 x^4 y^{-2} = \frac{1}{9} \cdot 9 \cdot x^{4+4} y^{-6-2} = x^8 y^{-8} = \frac{x^8}{y^8}$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subsection 2.2 -->
+      <div class="space-y-4 pt-4">
+        <h3 class="text-lg font-bold text-brand-700 dark:text-brand-400 border-b border-brand-200 dark:border-brand-800 pb-2">
+          2.2. $n$ зэргийн язгуур ба түүний чанар
+        </h3>
+
+        <!-- Task 3 -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box space-y-4">
+          <h4 class="font-bold text-slate-800 dark:text-slate-100">
+            <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-brand-600 font-extrabold mr-2">Даалгавар 3</span>
+            Илэрхийллийн утгыг олоорой.
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">а)</div>
+              <div>$\sqrt[3]{-64} + \sqrt[4]{81 \cdot 16}$</div>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">б)</div>
+              <div>$\sqrt[5]{\frac{32}{243}} - \sqrt{\sqrt[3]{64}}$</div>
+            </div>
+          </div>
+          <div class="no-print pt-2">
+            <button onclick="toggleSolution('sol-3')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-700 transition flex items-center space-x-1">
+              <i class="fa-regular fa-eye"></i>
+              <span>Бодолт & Хариу харах</span>
+            </button>
+            <div id="sol-3" class="hidden mt-3 p-4 bg-brand-50/60 dark:bg-slate-700/80 rounded-xl text-sm space-y-2 border border-brand-200 dark:border-slate-600">
+              <div><strong>а)</strong> $(-4) + (3 \cdot 2) = -4 + 6 = 2$</div>
+              <div><strong>б)</strong> $\frac{2}{3} - \sqrt[6]{64} = \frac{2}{3} - 2 = -\frac{4}{3} = -1\frac{1}{3}$</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 4 -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box space-y-4">
+          <h4 class="font-bold text-slate-800 dark:text-slate-100">
+            <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-brand-600 font-extrabold mr-2">Даалгавар 4</span>
+            Илэрхийллийг хялбарчлан язгуурын тэмдгийн өмнө үржигдэхүүн гаргаарай.
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">а)</div>
+              <div>$\sqrt[3]{128} - \sqrt[3]{54} + \sqrt[3]{16}$</div>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">б)</div>
+              <div>$\sqrt[4]{a^9 b^{12}} \quad (a > 0, b > 0)$</div>
+            </div>
+          </div>
+          <div class="no-print pt-2">
+            <button onclick="toggleSolution('sol-4')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-700 transition flex items-center space-x-1">
+              <i class="fa-regular fa-eye"></i>
+              <span>Бодолт & Хариу харах</span>
+            </button>
+            <div id="sol-4" class="hidden mt-3 p-4 bg-brand-50/60 dark:bg-slate-700/80 rounded-xl text-sm space-y-2 border border-brand-200 dark:border-slate-600">
+              <div><strong>а)</strong> $4\sqrt[3]{2} - 3\sqrt[3]{2} + 2\sqrt[3]{2} = 3\sqrt[3]{2}$</div>
+              <div><strong>б)</strong> $\sqrt[4]{a^8 \cdot a \cdot b^{12}} = a^2 b^3 \sqrt[4]{a}$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subsection 2.3 -->
+      <div class="space-y-4 pt-4">
+        <h3 class="text-lg font-bold text-brand-700 dark:text-brand-400 border-b border-brand-200 dark:border-brand-800 pb-2">
+          2.3. Стандарт хэлбэр ба бодит тооны үйлдэл
+        </h3>
+
+        <!-- Task 5 -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box space-y-4">
+          <h4 class="font-bold text-slate-800 dark:text-slate-100">
+            <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-brand-600 font-extrabold mr-2">Даалгавар 5</span>
+            Үйлдлийг гүйцэтгэж, хариуг стандарт хэлбэрт оруулна уу.
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">а)</div>
+              <div>$(4.2 \cdot 10^5) \cdot (2.5 \cdot 10^{-2})$</div>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">б)</div>
+              <div>$\frac{1.44 \cdot 10^8}{3.6 \cdot 10^3}$</div>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">в)</div>
+              <div>$(6.3 \cdot 10^6) + (2.7 \cdot 10^5)$</div>
+            </div>
+          </div>
+          <div class="no-print pt-2">
+            <button onclick="toggleSolution('sol-5')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-700 transition flex items-center space-x-1">
+              <i class="fa-regular fa-eye"></i>
+              <span>Бодолт & Хариу харах</span>
+            </button>
+            <div id="sol-5" class="hidden mt-3 p-4 bg-brand-50/60 dark:bg-slate-700/80 rounded-xl text-sm space-y-2 border border-brand-200 dark:border-slate-600">
+              <div><strong>а)</strong> $10.5 \cdot 10^3 = 1.05 \cdot 10^4$</div>
+              <div><strong>б)</strong> $0.4 \cdot 10^5 = 4 \cdot 10^4$</div>
+              <div><strong>в)</strong> $(6.3 + 0.27) \cdot 10^6 = 6.57 \cdot 10^6$</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task 6 -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box space-y-4">
+          <h4 class="font-bold text-slate-800 dark:text-slate-100">
+            <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-brand-600 font-extrabold mr-2">Даалгавар 6</span>
+            Илэрхийллийн хуваарийг язгуураас чөлөөлж (рационалжуулж) хялбарчлаарай.
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">а)</div>
+              <div>$\frac{10}{\sqrt{5}}$</div>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">б)</div>
+              <div>$\frac{6}{\sqrt{7} - 1}$</div>
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <div class="font-semibold text-xs text-slate-500 mb-1">в)</div>
+              <div>$(\sqrt{8} + \sqrt{2}) \cdot \sqrt{2}$</div>
+            </div>
+          </div>
+          <div class="no-print pt-2">
+            <button onclick="toggleSolution('sol-6')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-700 transition flex items-center space-x-1">
+              <i class="fa-regular fa-eye"></i>
+              <span>Бодолт & Хариу харах</span>
+            </button>
+            <div id="sol-6" class="hidden mt-3 p-4 bg-brand-50/60 dark:bg-slate-700/80 rounded-xl text-sm space-y-2 border border-brand-200 dark:border-slate-600">
+              <div><strong>а)</strong> $\frac{10\sqrt{5}}{5} = 2\sqrt{5}$</div>
+              <div><strong>б)</strong> $\frac{6(\sqrt{7} + 1)}{7 - 1} = \frac{6(\sqrt{7} + 1)}{6} = \sqrt{7} + 1$</div>
+              <div><strong>в)</strong> $\sqrt{16} + \sqrt{4} = 4 + 2 = 6$</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: INTEGRATED TEST & COMPREHENSIVE PROBLEMS -->
+    <section id="section-test" class="tab-content hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl sm:text-2xl font-bold flex items-center">
+          <i class="fa-solid fa-list-check text-brand-600 mr-2.5"></i>
+          III. НЭГТГЭН СОРИХ ДААЛГАВАР (20 минут)
+        </h2>
+        <span class="text-xs font-semibold px-3 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 rounded-full">50 - 70 дахь минут</span>
+      </div>
+
+      <!-- Part A: Multiple Choice Interactive Quiz -->
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+          <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">
+            Хэсэг A: Тэст даалгавар (Зөв хариуг сонгоно уу)
+          </h3>
+          <span class="text-xs font-medium text-slate-500">4 асуулт • 4 оноо</span>
+        </div>
+
+        <div class="space-y-6">
+          <!-- Quiz Q1 -->
+          <div class="space-y-2 p-4 rounded-xl bg-slate-50 dark:bg-slate-700/30">
+            <p class="font-semibold text-sm">1. $8^{-\frac{2}{3}}$ илэрхийллийн утгыг олоорой.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm pt-2">
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q1" value="A" class="accent-brand-600">
+                <span>А. $-4$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q1" value="B" class="accent-brand-600">
+                <span>Б. $\frac{1}{4}$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q1" value="C" class="accent-brand-600">
+                <span>В. $4$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q1" value="D" class="accent-brand-600">
+                <span>Г. $-\frac{1}{4}$</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Quiz Q2 -->
+          <div class="space-y-2 p-4 rounded-xl bg-slate-50 dark:bg-slate-700/30">
+            <p class="font-semibold text-sm">2. $\sqrt[3]{a^2 \cdot \sqrt{a}}$ илэрхийллийг рационал илтгэгчтэй зэрэг хэлбэрт бичээрэй ($a > 0$).</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm pt-2">
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q2" value="A" class="accent-brand-600">
+                <span>А. $a^{\frac{5}{6}}$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q2" value="B" class="accent-brand-600">
+                <span>Б. $a^{\frac{1}{3}}$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q2" value="C" class="accent-brand-600">
+                <span>В. $a^{\frac{3}{2}}$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q2" value="D" class="accent-brand-600">
+                <span>Г. $a^{\frac{7}{6}}$</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Quiz Q3 -->
+          <div class="space-y-2 p-4 rounded-xl bg-slate-50 dark:bg-slate-700/30">
+            <p class="font-semibold text-sm">3. $0.000058$ тооны стандарт хэлбэрийг олоорой.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm pt-2">
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q3" value="A" class="accent-brand-600">
+                <span>А. $58 \cdot 10^{-6}$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q3" value="B" class="accent-brand-600">
+                <span>Б. $5.8 \cdot 10^{-4}$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q3" value="C" class="accent-brand-600">
+                <span>В. $5.8 \cdot 10^{-5}$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q3" value="D" class="accent-brand-600">
+                <span>Г. $0.58 \cdot 10^{-4}$</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Quiz Q4 -->
+          <div class="space-y-2 p-4 rounded-xl bg-slate-50 dark:bg-slate-700/30">
+            <p class="font-semibold text-sm">4. $(\sqrt{5} - \sqrt{3})(\sqrt{5} + \sqrt{3})$ утгыг олоорой.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm pt-2">
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q4" value="A" class="accent-brand-600">
+                <span>А. $2$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q4" value="B" class="accent-brand-600">
+                <span>Б. $8$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q4" value="C" class="accent-brand-600">
+                <span>В. $\sqrt{2}$</span>
+              </label>
+              <label class="quiz-option cursor-pointer p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-brand-500 transition flex items-center space-x-2">
+                <input type="radio" name="q4" value="D" class="accent-brand-600">
+                <span>Г. $15$</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-print pt-2 flex items-center justify-between">
+          <button onclick="gradeQuiz()" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition shadow flex items-center space-x-2">
+            <i class="fa-solid fa-square-check"></i>
+            <span>Тэст хариу шалгах</span>
+          </button>
+          <div id="quiz-result" class="hidden text-sm font-bold px-4 py-2 rounded-xl"></div>
+        </div>
+      </div>
+
+      <!-- Part B: Show your work Problems -->
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-box space-y-6">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-3">
+          Хэсэг Б: Задлан бодох ба бодит хэрэглээний бодлого
+        </h3>
+
+        <!-- Problem 5 -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-slate-800 dark:text-slate-100">
+            <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-brand-600 font-extrabold mr-2">Бодлого 5</span>
+            Илэрхийллийг хялбарчлаарай ($a > 0, b > 0, a \neq b$):
+          </h4>
+          <div class="p-4 bg-slate-50 dark:bg-slate-700/40 rounded-xl overflow-x-auto text-center">
+            $$\left( \frac{a - b}{\sqrt{a} - \sqrt{b}} - \frac{a + b}{\sqrt{a} + \sqrt{b}} \right) \cdot \frac{\sqrt{a} + \sqrt{b}}{2\sqrt{ab}}$$
+          </div>
+          <div class="no-print pt-1">
+            <button onclick="toggleSolution('sol-p5')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-700 transition flex items-center space-x-1">
+              <i class="fa-regular fa-eye"></i>
+              <span>Задлан бодолт харах</span>
+            </button>
+            <div id="sol-p5" class="hidden mt-3 p-4 bg-brand-50/60 dark:bg-slate-700/80 rounded-xl text-sm space-y-2 border border-brand-200 dark:border-slate-600">
+              <p>1) Эхний хуваарь: $\frac{a-b}{\sqrt{a}-\sqrt{b}} = \frac{(\sqrt{a}-\sqrt{b})(\sqrt{a}+\sqrt{b})}{\sqrt{a}-\sqrt{b}} = \sqrt{a}+\sqrt{b}$</p>
+              <p>2) Хаалтан доторх үйлдлийг нэгтгэвэл:</p>
+              <div class="py-1">$$(\sqrt{a}+\sqrt{b}) - \frac{a+b}{\sqrt{a}+\sqrt{b}} = \frac{(\sqrt{a}+\sqrt{b})^2 - (a+b)}{\sqrt{a}+\sqrt{b}} = \frac{a+2\sqrt{ab}+b-a-b}{\sqrt{a}+\sqrt{b}} = \frac{2\sqrt{ab}}{\sqrt{a}+\sqrt{b}}$$</div>
+              <p>3) Иймд үржүүлбэл:</p>
+              <div class="py-1">$$\frac{2\sqrt{ab}}{\sqrt{a}+\sqrt{b}} \cdot \frac{\sqrt{a}+\sqrt{b}}{2\sqrt{ab}} = 1$$</div>
+              <p class="font-bold text-brand-700 dark:text-brand-400">Хариу: $1$</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Problem 6 -->
+        <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+          <h4 class="font-bold text-slate-800 dark:text-slate-100">
+            <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-brand-600 font-extrabold mr-2">Бодлого 6</span>
+            Астрономийн хэрэглээний бодлого:
+          </h4>
+          <p class="text-sm text-slate-700 dark:text-slate-300">
+            Нарнаас Дэлхий хүртэлх зай ойролцоогоор $1.5 \cdot 10^8 \text{ км}$, харин Нарнаас Плутон гараг хүртэлх дундаж зай ойролцоогоор $5.9 \cdot 10^9 \text{ км}$ байдаг.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm pt-1">
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <strong>а)</strong> Нарнаас Плутон хүртэлх зай нь Нарнаас Дэлхий хүртэлх зайнаас хэд дахин их вэ? (Бутархайн оронгоор нарийвчлан стандарт хэлбэрт оруулна уу)
+            </div>
+            <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl">
+              <strong>б)</strong> Гэрлийн хурд $3 \cdot 10^5 \text{ км/с}$ бол Нарнаас гарсан гэрэл Дэлхий дээр хэдэн секундэд ирэх вэ? Хариуг стандарт хэлбэрт бичнэ үү.
+            </div>
+          </div>
+          <div class="no-print pt-1">
+            <button onclick="toggleSolution('sol-p6')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-brand-50 hover:text-brand-700 transition flex items-center space-x-1">
+              <i class="fa-regular fa-eye"></i>
+              <span>Задлан бодолт харах</span>
+            </button>
+            <div id="sol-p6" class="hidden mt-3 p-4 bg-brand-50/60 dark:bg-slate-700/80 rounded-xl text-sm space-y-2 border border-brand-200 dark:border-slate-600">
+              <div>
+                <strong>а)</strong> $\frac{5.9 \cdot 10^9}{1.5 \cdot 10^8} = \frac{5.9}{1.5} \cdot 10^{9-8} \approx 3.933 \cdot 10^1 = 39.33 \text{ дахин}$
+              </div>
+              <div>
+                <strong>б)</strong> $t = \frac{S}{v} = \frac{1.5 \cdot 10^8}{3 \cdot 10^5} = 0.5 \cdot 10^3 = 500 \text{ с} = 5 \cdot 10^2 \text{ с}$
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: COMPLETE SOLUTIONS & PEER REVIEW -->
+    <section id="section-solutions" class="tab-content hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl sm:text-2xl font-bold flex items-center">
+          <i class="fa-solid fa-key text-brand-600 mr-2.5"></i>
+          IV. ХАРИУ БА ИЖ БҮРЭН БОДОЛТ (10 минут)
+        </h2>
+        <span class="text-xs font-semibold px-3 py-1 bg-brand-100 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300 rounded-full">70 - 80 дахь минут</span>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6 card-box">
+        <div class="p-4 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 text-sm">
+          <p class="font-semibold text-purple-800 dark:text-purple-300">
+            <i class="fa-solid fa-users text-purple-600 mr-1.5"></i> Үе тэнгийнхнээ болон өөрийгөө дүгнэх удирдамж:
+          </p>
+          <ul class="list-disc list-inside mt-2 space-y-1 text-slate-600 dark:text-slate-300 text-xs">
+            <li>Даалгавар тус бүрийн сүүлийн бодолтыг дараах хуудаснаас тулган шалгаарай.</li>
+            <li>Алдаатай бодсон даалгаварт ямар томьёо буруу ашигласныг тэмдэглэж авна уу.</li>
+          </ul>
+        </div>
+
+        <div class="space-y-6 text-sm divide-y divide-slate-100 dark:divide-slate-700">
+          
+          <!-- II Section Answers -->
+          <div class="pt-4 space-y-3">
+            <h3 class="font-bold text-brand-700 dark:text-brand-400 text-base">II. Сэдэвчилсэн бататгах даалгаврын хариу</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl space-y-1">
+                <p class="font-semibold text-xs text-brand-600">Даалгавар 1:</p>
+                <p>а) $2^{-4} + 3^2 - 1 = \frac{1}{16} + 8 = 8\frac{1}{16} = \frac{129}{16}$</p>
+                <p>б) $\frac{2^{-6} \cdot 2^8}{2^5} = 2^{-3} = \frac{1}{8}$</p>
+                <p>в) $3^2 \cdot 2^{-3} + 3 = \frac{9}{8} + 3 = 4\frac{1}{8}$</p>
+              </div>
+
+              <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl space-y-1">
+                <p class="font-semibold text-xs text-brand-600">Даалгавар 2:</p>
+                <p>а) $\frac{a^{-5} \cdot a^6}{a^{-4}} = a^5$</p>
+                <p>б) $3^{-2} x^4 y^{-6} \cdot 9 x^4 y^{-2} = \frac{x^8}{y^8}$</p>
+              </div>
+
+              <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl space-y-1">
+                <p class="font-semibold text-xs text-brand-600">Даалгавар 3:</p>
+                <p>а) $-4 + 6 = 2$</p>
+                <p>б) $\frac{2}{3} - 2 = -1\frac{1}{3} = -\frac{4}{3}$</p>
+              </div>
+
+              <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl space-y-1">
+                <p class="font-semibold text-xs text-brand-600">Даалгавар 4:</p>
+                <p>а) $4\sqrt[3]{2} - 3\sqrt[3]{2} + 2\sqrt[3]{2} = 3\sqrt[3]{2}$</p>
+                <p>б) $a^2 b^3 \sqrt[4]{a}$</p>
+              </div>
+
+              <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl space-y-1">
+                <p class="font-semibold text-xs text-brand-600">Даалгавар 5:</p>
+                <p>а) $1.05 \cdot 10^4$</p>
+                <p>б) $4 \cdot 10^4$</p>
+                <p>в) $6.57 \cdot 10^6$</p>
+              </div>
+
+              <div class="p-3 bg-slate-50 dark:bg-slate-700/40 rounded-xl space-y-1">
+                <p class="font-semibold text-xs text-brand-600">Даалгавар 6:</p>
+                <p>а) $2\sqrt{5}$</p>
+                <p>б) $\sqrt{7} + 1$</p>
+                <p>в) $6$</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- III Section Answers -->
+          <div class="pt-4 space-y-3">
+            <h3 class="font-bold text-brand-700 dark:text-brand-400 text-base">III. Нэгтгэн сорих даалгаврын хариу</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 bg-emerald-50/70 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl space-y-2">
+                <p class="font-bold text-emerald-800 dark:text-emerald-300">Хэсэг А (Тэст):</p>
+                <ul class="space-y-1 text-xs">
+                  <li><strong>1. Б</strong> ($8^{-\frac{2}{3}} = (2^3)^{-\frac{2}{3}} = 2^{-2} = \frac{1}{4}$)</li>
+                  <li><strong>2. А</strong> ($\sqrt[3]{a^2 \cdot a^{\frac{1}{2}}} = \sqrt[3]{a^{\frac{5}{2}}} = a^{\frac{5}{6}}$)</li>
+                  <li><strong>3. В</strong> ($0.000058 = 5.8 \cdot 10^{-5}$)</li>
+                  <li><strong>4. А</strong> ($(\sqrt{5})^2 - (\sqrt{3})^2 = 5 - 3 = 2$)</li>
+                </ul>
+              </div>
+
+              <div class="p-4 bg-emerald-50/70 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl space-y-2">
+                <p class="font-bold text-emerald-800 dark:text-emerald-300">Хэсэг Б (Бодлого):</p>
+                <div class="text-xs space-y-1.5">
+                  <p><strong>5.</strong> Эцсийн хялбарчилсан утга = <strong>$1$</strong></p>
+                  <p><strong>6. а)</strong> $\approx 39.33$ дахин (стандарт: $3.933 \cdot 10^1$)</p>
+                  <p><strong>6. б)</strong> $500 \text{ с} = 5 \cdot 10^2 \text{ с}$</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Formula Quick Modal -->
+  <div id="formula-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+        <h3 class="text-lg font-bold flex items-center">
+          <i class="fa-solid fa-book-bookmark text-brand-600 mr-2"></i>
+          Томьёоны хурдан лавлах
+        </h3>
+        <button onclick="closeFormulaModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-sm">
+        <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+          <div class="font-bold text-xs text-brand-600 mb-1">Зэргийн чанар:</div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>$a^m \cdot a^n = a^{m+n}$</div>
+            <div>$\frac{a^m}{a^n} = a^{m-n}$</div>
+            <div>$(a^m)^n = a^{m \cdot n}$</div>
+            <div>$a^{-n} = \frac{1}{a^n}$</div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+          <div class="font-bold text-xs text-brand-600 mb-1">Язгуурын чанар:</div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>$\sqrt[n]{a \cdot b} = \sqrt[n]{a} \cdot \sqrt[n]{b}$</div>
+            <div>$\sqrt[n]{\frac{a}{b}} = \frac{\sqrt[n]{a}}{\sqrt[n]{b}}$</div>
+            <div>$\sqrt[m]{\sqrt[n]{a}} = \sqrt[m \cdot n]{a}$</div>
+            <div>$a^{\frac{m}{n}} = \sqrt[n]{a^m}$</div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+          <div class="font-bold text-xs text-brand-600 mb-1">Стандарт хэлбэр:</div>
+          <div class="text-xs">$a \cdot 10^n \quad (1 \le a < 10, n \in \mathbb{Z})$</div>
+        </div>
+      </div>
+
+      <div class="pt-2 text-right">
+        <button onclick="closeFormulaModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl font-medium text-xs transition">
+          Хаах
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teacher PIN Verification Modal -->
+  <div id="pin-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 animate-in fade-in zoom-in duration-150">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+        <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center">
+          <i class="fa-solid fa-lock text-amber-500 mr-2.5"></i>
+          Багшийн пин код
+        </h3>
+        <button onclick="closePinModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+        Хариу болон бодолтыг дэлгэж харахын тулд багшийн нууц кодыг оруулна уу.
+      </p>
+      <div>
+        <input type="password" id="pin-input" placeholder="Код оруулна уу..." onkeyup="if(event.key==='Enter') verifyPin()" class="w-full px-4 py-2.5 text-center text-lg font-bold tracking-widest border border-slate-300 dark:border-slate-600 rounded-2xl bg-slate-50 dark:bg-slate-700/60 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
+        <div id="pin-error" class="text-xs text-red-500 font-semibold hidden text-center mt-2">
+          <i class="fa-solid fa-circle-exclamation mr-1"></i> Нууц код буруу байна!
+        </div>
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closePinModal()" class="w-1/2 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-xs font-semibold text-slate-700 dark:text-slate-200 rounded-xl transition">
+          Цуцлах
+        </button>
+        <button onclick="verifyPin()" class="w-1/2 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl transition shadow">
+          Нээх
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive JavaScript Scripts -->
+  <script>
+    // ==========================================
+    // БАГШИЙН НУУЦ КОД (ЭНЭ КОДЫГ СОЛЬЖ БОЛНО):
+    // ==========================================
+    const TEACHER_PIN = "1234"; // Багшийн нууц код
+
+    let answersUnlocked = false; // Хариу задарсан эсэх төлөв
+    let pendingTargetTab = null;
+    let pendingSolutionId = null;
+
+    // Initialize KaTeX math rendering after page load
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    });
+
+    // Dark Mode Toggle
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+    }
+
+    // Toggle Lock status: Lock directly or prompt PIN to Unlock
+    function toggleAnswersDirectly() {
+      if (answersUnlocked) {
+        answersUnlocked = false;
+        updateLockUI();
+      } else {
+        openPinModal();
+      }
+    }
+
+    function openPinModal(targetTab = null, solutionId = null) {
+      pendingTargetTab = targetTab;
+      pendingSolutionId = solutionId;
+      
+      const modal = document.getElementById('pin-modal');
+      const input = document.getElementById('pin-input');
+      const errorMsg = document.getElementById('pin-error');
+      
+      input.value = '';
+      errorMsg.classList.add('hidden');
+      modal.classList.remove('hidden');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function closePinModal() {
+      document.getElementById('pin-modal').classList.add('hidden');
+      pendingTargetTab = null;
+      pendingSolutionId = null;
+    }
+
+    function verifyPin() {
+      const input = document.getElementById('pin-input').value;
+      const errorMsg = document.getElementById('pin-error');
+
+      if (input === TEACHER_PIN) {
+        answersUnlocked = true;
+        updateLockUI();
+        closePinModal();
+
+        if (pendingTargetTab) {
+          switchTab(pendingTargetTab);
+        }
+        if (pendingSolutionId) {
+          const el = document.getElementById(pendingSolutionId);
+          if (el) {
+            el.classList.remove('hidden');
+            renderMathInElement(el, {
+              delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+              ],
+              throwOnError: false
+            });
+          }
+        }
+      } else {
+        errorMsg.classList.remove('hidden');
+      }
+    }
+
+    function updateLockUI() {
+      const lockBtn = document.getElementById('answer-lock-btn');
+      const lockIcon = document.getElementById('lock-icon');
+      const lockLabel = document.getElementById('lock-label');
+      const tabSolutionsLock = document.getElementById('tab-solutions-lock-icon');
+
+      if (answersUnlocked) {
+        lockBtn.className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-emerald-100 text-emerald-900 dark:bg-emerald-900/60 dark:text-emerald-200 hover:bg-emerald-200 dark:hover:bg-emerald-800 transition flex items-center space-x-1.5 shadow-sm border border-emerald-300 dark:border-emerald-700";
+        lockIcon.className = "fa-solid fa-lock-open text-emerald-600 dark:text-emerald-400";
+        lockLabel.textContent = "Хариу: Нээлттэй";
+        tabSolutionsLock.className = "fa-solid fa-check text-emerald-500 ml-1.5 text-xs";
+      } else {
+        lockBtn.className = "px-3 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-800 transition flex items-center space-x-1.5 shadow-sm border border-amber-300 dark:border-amber-700";
+        lockIcon.className = "fa-solid fa-lock text-amber-600 dark:text-amber-400";
+        lockLabel.textContent = "Хариу: Нуугдсан";
+        tabSolutionsLock.className = "fa-solid fa-lock text-amber-500 ml-1.5 text-xs";
+
+        // Hide all individual solutions if closed
+        const solutions = document.querySelectorAll('[id^="sol-"]');
+        solutions.forEach(sol => sol.classList.add('hidden'));
+
+        // If currently on solutions tab, switch to overview
+        const solutionsTab = document.getElementById('section-solutions');
+        if (!solutionsTab.classList.contains('hidden')) {
+          switchTab('overview');
+        }
+      }
+    }
+
+    // Tab Navigation Logic
+    function switchTab(tabId) {
+      if (tabId === 'solutions' && !answersUnlocked) {
+        openPinModal('solutions');
+        return;
+      }
+
+      // Hide all tabs
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(el => el.classList.add('hidden'));
+
+      // Deactivate all tab buttons
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white', 'shadow');
+        btn.classList.add('text-slate-600', 'dark:text-slate-300');
+      });
+
+      // Activate selected tab & button
+      const activeContent = document.getElementById('section-' + tabId);
+      if (activeContent) {
+        activeContent.classList.remove('hidden');
+      }
+
+      const activeBtn = document.getElementById('tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-brand-600', 'text-white', 'shadow');
+        activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300');
+      }
+
+      // Re-trigger KaTeX rendering for dynamic visibilities
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Toggle Solution Accordions with PIN protection
+    function toggleSolution(id) {
+      if (!answersUnlocked) {
+        openPinModal(null, id);
+        return;
+      }
+
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.toggle('hidden');
+        renderMathInElement(el, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    // Formula Modal Controls
+    function openFormulaModal() {
+      const modal = document.getElementById('formula-modal');
+      modal.classList.remove('hidden');
+      renderMathInElement(modal, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+      });
+    }
+
+    function closeFormulaModal() {
+      document.getElementById('formula-modal').classList.add('hidden');
+    }
+
+    // Interactive Quiz Grading Logic
+    function gradeQuiz() {
+      const answers = {
+        q1: 'B',
+        q2: 'A',
+        q3: 'C',
+        q4: 'A'
+      };
+
+      let score = 0;
+      let total = 4;
+
+      for (let q in answers) {
+        const selected = document.querySelector(`input[name="${q}"]:checked`);
+        if (selected && selected.value === answers[q]) {
+          score++;
+        }
+      }
+
+      const resultBox = document.getElementById('quiz-result');
+      resultBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700');
+
+      if (score === total) {
+        resultBox.classList.add('bg-emerald-100', 'text-emerald-800');
+        resultBox.innerHTML = `<i class="fa-solid fa-trophy mr-1"></i> Маш сайн! Оноо: ${score}/${total} (100%)`;
+      } else {
+        resultBox.classList.add('bg-amber-100', 'text-amber-800');
+        resultBox.innerHTML = `<i class="fa-solid fa-circle-info mr-1"></i> Таны оноо: ${score}/${total}.`;
+      }
+    }
+
+    // 80-minute Countdown Timer Logic & Auto 10-Min Unlock
+    let totalSeconds = 80 * 60; // 80 minutes in seconds
+    let timerInterval = null;
+    let isTimerRunning = false;
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      const formattedMin = String(minutes).padStart(2, '0');
+      const formattedSec = String(seconds).padStart(2, '0');
+      document.getElementById('timer-display').textContent = `${formattedMin}:${formattedSec}`;
+    }
+
+    function toggleTimer() {
+      const icon = document.getElementById('timer-icon');
+      const startBtn = document.getElementById('timer-start-btn');
+
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        icon.className = 'fa-solid fa-play';
+        startBtn.classList.remove('bg-amber-600');
+        startBtn.classList.add('bg-brand-600');
+      } else {
+        isTimerRunning = true;
+        icon.className = 'fa-solid fa-pause';
+        startBtn.classList.remove('bg-brand-600');
+        startBtn.classList.add('bg-amber-600');
+
+        timerInterval = setInterval(() => {
+          if (totalSeconds > 0) {
+            totalSeconds--;
+            updateTimerDisplay();
+
+            // Automatic unlock during the final 10 minutes (<= 10:00)
+            if (totalSeconds <= 10 * 60) {
+              if (!answersUnlocked) {
+                answersUnlocked = true;
+                updateLockUI();
+                const banner = document.getElementById('auto-unlock-banner');
+                if (banner) banner.classList.remove('hidden');
+              }
+            }
+          } else {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            icon.className = 'fa-solid fa-play';
+            const resultBox = document.getElementById('timer-display');
+            resultBox.textContent = "00:00 - Цаг дууслаа!";
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      if (isTimerRunning) {
+        toggleTimer();
+      }
+      totalSeconds = 80 * 60;
+      updateTimerDisplay();
+      const banner = document.getElementById('auto-unlock-banner');
+      if (banner) banner.classList.add('hidden');
+    }
+
+    function startFullLesson() {
+      switchTab('practice');
+      if (!isTimerRunning) {
+        toggleTimer();
+      }
+    }
+  </script>
+</body>
+</html>
